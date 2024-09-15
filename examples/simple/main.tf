@@ -1,9 +1,18 @@
 data "yandex_client_config" "client" {}
 
+resource "random_id" "rand_id" {
+  byte_length = 2
+}
+
+resource "random_password" "admin_password" {
+  length = 8
+}
+
+
 module "iam_accounts" {
   source = "git::https://github.com/terraform-yacloud-modules/terraform-yandex-iam.git//modules/iam-account?ref=v1.0.0"
 
-  name = "iam"
+  name = "iam-${random_id.rand_id.hex}"
   folder_roles = [
     "admin",
   ]
@@ -19,7 +28,8 @@ module "network" {
 
   folder_id = data.yandex_client_config.client.folder_id
 
-  blank_name = "clickhouse-vpc-nat-gateway"
+  blank_name = "clickhouse-vpc-nat-gateway-${random_id.rand_id.hex}"
+#  blank_name = "clickhouse-vpc-nat-gateway"
   labels = {
     repo = "terraform-yacloud-modules/terraform-yandex-vpc"
   }
@@ -37,6 +47,8 @@ module "clickhouse" {
   source = "../../"
 
   network_id = module.network.vpc_id
+  admin_password = "${random_password.admin_password.result}"
+  #admin_password = "${random_id.rand_id.hex}"
 
   users = [
     {
@@ -61,12 +73,12 @@ module "clickhouse" {
   ]
 
   # Optional variables
-  name                          = "clickhouse-cluster"
+  name                          = "CH-${random_id.rand_id.hex}"
   clickhouse_disk_size          = 10
   clickhouse_disk_type_id       = "network-ssd"
   clickhouse_resource_preset_id = "s3-c2-m8"
   environment                   = "PRODUCTION"
-  clickhouse_version            = "23.8"
+  clickhouse_version            = "24.8"
   description                   = "ClickHouse cluster description"
   folder_id                     = data.yandex_client_config.client.folder_id
 
