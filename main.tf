@@ -4,6 +4,7 @@ locals {
   folder_id = var.folder_id == null ? data.yandex_client_config.client.folder_id : var.folder_id
 }
 
+
 resource "random_password" "password" {
   for_each         = { for v in var.users : v.name => v if v.password == null }
   length           = 16
@@ -14,6 +15,7 @@ resource "random_password" "password" {
   min_upper        = 1
   override_special = "_"
 }
+
 
 # ClickHouse cluster
 resource "yandex_mdb_clickhouse_cluster" "this" {

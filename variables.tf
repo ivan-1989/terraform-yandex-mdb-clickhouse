@@ -285,7 +285,7 @@ variable "clickhouse_version" {
   type    = string
   default = "23.8"
   validation {
-    condition     = contains(["23.8", "24.3", "24.4", "24.5", "24.6"], var.clickhouse_version)
+    condition     = contains(["23.8", "24.3", "24.4", "24.5", "24.6", "24.7", "24.8"], var.clickhouse_version)
     error_message = "Allowed ClickHouse versions are 23.8, 24.3, 24.4, 24.5, 24.6."
   }
 }
