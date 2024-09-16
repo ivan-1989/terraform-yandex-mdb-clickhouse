@@ -42,7 +42,7 @@ variable "clickhouse_clusters" {
       databases = []
       deletion_protection = false
 
-      disk_size          = 100
+      disk_size          = 10
       disk_type_id       = "network-hdd"
 #      disk_type_id       = "network-ssd"
       resource_preset_id = "b3-c1-m4"
@@ -54,13 +54,13 @@ variable "clickhouse_clusters" {
       sql_user_management     = true
       sql_database_management = true
 
-      zookeeper_disk_size          = 100
-      zookeeper_disk_type_id       = "network-ssd"
-      zookeeper_resource_preset_id = null
+      zookeeper_disk_size          = 10
+      zookeeper_disk_type_id       = "network-hdd"
+      zookeeper_resource_preset_id = "b3-c1-m4"
 
       shards = [
         {
-          name   = "master01"
+          name   = "shard1"
           weight = 100
           resources = {
 #            resource_preset_id = "s2.micro"
@@ -71,8 +71,8 @@ variable "clickhouse_clusters" {
           }
         },
         {
-          name   = "master02"
-          weight = 100
+          name   = "shard2"
+          weight = 150
           resources = {
 #            resource_preset_id = "s2.micro"
             resource_preset_id = "b3-c1-m4"
@@ -84,15 +84,27 @@ variable "clickhouse_clusters" {
       ]
       hosts = [
         {
-#          shard_name       = "master01"
+          shard_name       = "shard1"
           type             = "CLICKHOUSE"
           zone             = "ru-central1-a"
           assign_public_ip = true
         },
         {
-#          shard_name       = "master01"
+          shard_name       = "shard1"
           type             = "CLICKHOUSE"
           zone             = "ru-central1-b"
+          assign_public_ip = true
+        },
+        {
+          shard_name       = "shard2"
+          type             = "CLICKHOUSE"
+          zone             = "ru-central1-b"
+          assign_public_ip = true
+        },
+        {
+          shard_name       = "shard2"
+          type             = "CLICKHOUSE"
+          zone             = "ru-central1-d"
           assign_public_ip = true
         },
         {
@@ -110,7 +122,7 @@ variable "clickhouse_clusters" {
         {
 #          shard_name       = "master01"
           type             = "ZOOKEEPER"
-          zone             = "ru-central1-b"
+          zone             = "ru-central1-d"
           assign_public_ip = false
         }
       ]
